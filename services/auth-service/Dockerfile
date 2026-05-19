@@ -19,4 +19,4 @@ COPY --chown=node:node . .
 
 EXPOSE 3001
 
-CMD [ "node", "dist/index.js" ]
+CMD [ "node", "src/index.js" ]
