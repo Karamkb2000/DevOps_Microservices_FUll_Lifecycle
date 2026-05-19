@@ -70,7 +70,6 @@ jobs:
       - name: Build ${{ matrix.service }} image
         uses: docker/build-push-action@v6
         with:
-          # FIX: parenthesize the OR so `frontend` doesn't collapse to boolean `true`
           context: ${{ (matrix.service == 'frontend' || matrix.service == 'nginx') && format('./{0}', matrix.service) || format('./services/{0}', matrix.service) }}
           push: false
           tags: ecommerce-${{ matrix.service }}:ci
