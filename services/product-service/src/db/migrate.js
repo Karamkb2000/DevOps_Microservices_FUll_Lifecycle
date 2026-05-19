@@ -43,9 +43,19 @@ const migrations = [
   },
 ];
 
+async function ensureExtension(name) {
+  // CREATE EXTENSION IF NOT EXISTS is NOT concurrency-safe in postgres.
+  // Multiple services racing on startup can both lose; swallow the duplicate-key error.
+  try {
+    await pool.query(`CREATE EXTENSION IF NOT EXISTS ${name}`);
+  } catch (e) {
+    if (e.code !== '23505') throw e;
+  }
+}
+
 async function runMigrations() {
-  await pool.query('CREATE EXTENSION IF NOT EXISTS pgcrypto');
-  await pool.query('CREATE EXTENSION IF NOT EXISTS pg_trgm');
+  await ensureExtension('pgcrypto');
+  await ensureExtension('pg_trgm');
   await pool.query(`
     CREATE TABLE IF NOT EXISTS schema_migrations (
       name VARCHAR(255) PRIMARY KEY,
